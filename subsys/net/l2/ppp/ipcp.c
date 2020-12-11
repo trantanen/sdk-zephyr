@@ -98,11 +98,20 @@ static int ipcp_ack_dns2(struct ppp_context *ctx, struct net_pkt *pkt,
 static int ipcp_nak_override_address(struct net_pkt *pkt, size_t oplen,
 				     struct in_addr *addr)
 {
+//b_jh:
+#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+	printf("ipcp_nak_override_address\n");
+
+	/* We are supposed to be a SERVER, i.e. don't take CLIENT's IP,
+	   because CLIENT is wanting to have it from us */
+    return 0;
+#else
 	if (oplen != sizeof(*addr)) {
 		return -EINVAL;
 	}
 
 	return net_pkt_read(pkt, addr, sizeof(*addr));
+#endif
 }
 
 static int ipcp_nak_ip_address(struct ppp_context *ctx, struct net_pkt *pkt,
@@ -159,6 +168,17 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 		return -EMSGSIZE;
 	}
 
+//b_jh:
+#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+	struct sockaddr_in zeroes;
+	
+	/* Request is zeros? Give our IP address in ConfNak */
+	if (net_addr_pton(AF_INET, "0.0.0.0", &zeroes) >= 0 &&
+		memcmp(&zeroes, &data->addr, sizeof(struct in_addr)) == 0) {
+		NET_WARN("\n[IPCP] zeroes received as IP addr, sending NAK with our IP\n");
+		return -EINVAL;
+	}
+#endif
 	if (CONFIG_NET_L2_PPP_LOG_LEVEL >= LOG_LEVEL_DBG) {
 		char dst[INET_ADDRSTRLEN];
 		char *addr_str;
@@ -174,9 +194,27 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 
 	return 0;
 }
+//b_jh:
+static int ipcp_server_nak_ip_address(struct ppp_fsm *fsm, struct net_pkt *ret_pkt,
+			       void *user_data)
+{
+	struct ppp_context *ctx =
+		CONTAINER_OF(fsm, struct ppp_context, ipcp.fsm);
+	
+	(void)net_pkt_write_u8(ret_pkt, IPCP_OPTION_IP_ADDRESS);
+	ipcp_add_ip_address(ctx, ret_pkt);
+
+	(void)net_pkt_write_u8(ret_pkt, IPCP_OPTION_DNS1);
+	(void)ipcp_add_dns1(ctx, ret_pkt);
+
+	(void)net_pkt_write_u8(ret_pkt, IPCP_OPTION_DNS2);
+	(void)ipcp_add_dns2(ctx, ret_pkt);
+
+	return 0;
+}
 
 static const struct ppp_peer_option_info ipcp_peer_options[] = {
-	PPP_PEER_OPTION(IPCP_OPTION_IP_ADDRESS, ipcp_ip_address_parse, NULL),
+	PPP_PEER_OPTION(IPCP_OPTION_IP_ADDRESS, ipcp_ip_address_parse, ipcp_server_nak_ip_address),
 };
 
 static int ipcp_config_info_req(struct ppp_fsm *fsm,
@@ -315,7 +353,6 @@ static void ipcp_up(struct ppp_fsm *fsm)
 {
 	struct ppp_context *ctx = CONTAINER_OF(fsm, struct ppp_context,
 					       ipcp.fsm);
-	struct net_if_addr *addr;
 	char dst[INET_ADDRSTRLEN];
 	char *addr_str;
 
@@ -326,6 +363,9 @@ static void ipcp_up(struct ppp_fsm *fsm)
 	addr_str = net_addr_ntop(AF_INET, &ctx->ipcp.my_options.address,
 				 dst, sizeof(dst));
 
+#if defined(CONFIG_NET_IPV4)
+	struct net_if_addr *addr;
+
 	addr = net_if_ipv4_addr_add(ctx->iface,
 				    &ctx->ipcp.my_options.address,
 				    NET_ADDR_MANUAL,
@@ -334,7 +374,7 @@ static void ipcp_up(struct ppp_fsm *fsm)
 		NET_ERR("Could not set IP address %s", log_strdup(addr_str));
 		return;
 	}
-
+#endif
 	NET_DBG("PPP up with address %s", log_strdup(addr_str));
 	ppp_network_up(ctx, PPP_IP);
 
@@ -349,10 +389,11 @@ static void ipcp_down(struct ppp_fsm *fsm)
 	struct ppp_context *ctx = CONTAINER_OF(fsm, struct ppp_context,
 					       ipcp.fsm);
 
+#if defined(CONFIG_NET_IPV4)
 	if (ctx->is_ipcp_up) {
 		net_if_ipv4_addr_rm(ctx->iface, &ctx->ipcp.my_options.address);
 	}
-
+#endif
 	memset(&ctx->ipcp.my_options.address, 0,
 	       sizeof(ctx->ipcp.my_options.address));
 	memset(&ctx->ipcp.my_options.dns1_address, 0,

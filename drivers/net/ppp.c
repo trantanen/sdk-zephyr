@@ -770,7 +770,8 @@ use_random_mac:
 	/* If we have a GSM modem with PPP support, then do not start the
 	 * interface automatically but only after the modem is ready.
 	 */
-	if (IS_ENABLED(CONFIG_MODEM_GSM_PPP)) {
+	//b_jh
+	if (IS_ENABLED(CONFIG_MODEM_GSM_PPP) || IS_ENABLED(CONFIG_FTA_PPP)) {
 		net_if_flag_set(iface, NET_IF_NO_AUTO_START);
 	}
 }

@@ -405,7 +405,7 @@ struct ppp_context {
 	} lcp;
 
 //jani
-#if defined(CONFIG_NET_IPV4) || defined(CONFIG_NET_OFFLOAD)
+#if defined(CONFIG_NET_IPV4) || (defined(CONFIG_NET_OFFLOAD) && defined(CONFIG_NET_L2_PPP))
 	struct {
 		/** Finite state machine for IPCP */
 		struct ppp_fsm fsm;

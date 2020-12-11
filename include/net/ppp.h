@@ -25,7 +25,12 @@ extern "C" {
  */
 
 /** PPP maximum receive unit (MRU) */
+//b_jh: TODO add MRU into LCP negoation?
+#if defined(CONFIG_NET_PPP_MTU_MRU)
+#define PPP_MRU CONFIG_NET_PPP_MTU_MRU
+#else
 #define PPP_MRU 1500
+#endif
 
 /** PPP maximum transfer unit (MTU) */
 #define PPP_MTU PPP_MRU
@@ -43,7 +48,8 @@ struct ppp_api {
 	 * struct so that we are compatible with network interface API.
 	 */
 	struct net_if_api iface_api;
-
+	
+	//jani: TODO: api for setting MTU an setting ip protocol support (based on pdn type)
 	/** Start the device */
 	int (*start)(const struct device *dev);
 
@@ -398,7 +404,8 @@ struct ppp_context {
 		uint32_t magic;
 	} lcp;
 
-#if defined(CONFIG_NET_IPV4)
+//jani
+#if defined(CONFIG_NET_IPV4) || defined(CONFIG_NET_OFFLOAD)
 	struct {
 		/** Finite state machine for IPCP */
 		struct ppp_fsm fsm;

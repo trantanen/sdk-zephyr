@@ -356,6 +356,11 @@ struct lcp_options {
 	uint16_t auth_proto;
 };
 
+//b_jh:
+#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#define LCP_NUM_MY_OPTIONS	1
+#endif
+
 struct ipcp_options {
 	/** IPv4 address */
 	struct in_addr address;
@@ -402,6 +407,10 @@ struct ppp_context {
 
 		/** Magic-Number value */
 		uint32_t magic;
+//b_jh:
+#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+		struct ppp_my_option_data my_options_data[LCP_NUM_MY_OPTIONS];
+#endif
 	} lcp;
 
 //jani

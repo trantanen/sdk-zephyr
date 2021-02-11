@@ -65,7 +65,7 @@ if (CONFIG_BUILD_WITH_TFM)
 
 		#Create concatenated binary image from the two independently signed binary files
 		COMMAND ${PYTHON_EXECUTABLE} ${TFM_MCUBOOT_DIR}/scripts/assemble.py
-		     --layout ${PREPROCESSED_FILE_S}
+			 --layout ${PREPROCESSED_FILE_S}
 			 -s ${CMAKE_BINARY_DIR}/tfm_s_signed.bin
 			 -n ${CMAKE_BINARY_DIR}/zephyr_ns_signed.bin
 			 -o ${CMAKE_BINARY_DIR}/tfm_sign.bin
@@ -74,13 +74,17 @@ if (CONFIG_BUILD_WITH_TFM)
 		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:tfm,BL2_BIN_FILE> ${CMAKE_BINARY_DIR}/mcuboot.bin
 
 		# Generate an intel hex file from the signed output binary
-		COMMAND srec_cat ${CMAKE_BINARY_DIR}/tfm_sign.bin
+		COMMAND ${SREC_CAT} ${CMAKE_BINARY_DIR}/tfm_sign.bin
 		-binary
 		-offset 0x10000
 		-o ${CMAKE_BINARY_DIR}/tfm_sign.hex
 		-intel
+	)
 
-		# Copy tfm_sign.hex to zephyr
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/tfm_sign.hex ${CMAKE_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
+	set_property(GLOBAL APPEND PROPERTY extra_post_build_byproducts
+		${CMAKE_BINARY_DIR}/tfm_s_signed.bin
+		${CMAKE_BINARY_DIR}/zephyr_ns_signed.bin
+		${CMAKE_BINARY_DIR}/tfm_sign.bin
+		${CMAKE_BINARY_DIR}/tfm_sign.hex
 	)
 endif()

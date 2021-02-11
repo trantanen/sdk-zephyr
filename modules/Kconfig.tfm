@@ -78,6 +78,28 @@ config TFM_PROFILE
 	  profile_medium and profile_small. The default profile does not need
 	  to have this configuration set.
 
+choice
+	bool
+	prompt "TFM build type"
+	default TFM_CMAKE_BUILD_TYPE_RELEASE if SPEED_OPTIMIZATIONS && BUILD_OUTPUT_STRIPPED
+	default TFM_CMAKE_BUILD_TYPE_MINSIZEREL if SIZE_OPTIMIZATIONS
+	default TFM_CMAKE_BUILD_TYPE_DEBUG if DEBUG_OPTIMIZATIONS
+	default TFM_CMAKE_BUILD_TYPE_RELWITHDEBINFO
+
+config TFM_CMAKE_BUILD_TYPE_RELEASE
+	bool "Release build"
+
+config TFM_CMAKE_BUILD_TYPE_RELWITHDEBINFO
+	bool "Release build with Debug info"
+
+config TFM_CMAKE_BUILD_TYPE_MINSIZEREL
+	bool "Release build, optimized for size"
+
+config TFM_CMAKE_BUILD_TYPE_DEBUG
+	bool "Debug build"
+
+endchoice
+
 config TFM_ISOLATION_LEVEL
 	int "Isolation level setting."
 	range 1 3
@@ -103,6 +125,16 @@ config TFM_BL2_FALSE
 	bool "TFM BL2 disabled"
 
 endchoice
+
+config TFM_MCUBOOT_IMAGE_NUMBER
+	int "Granularity of FW updates of TFM and app"
+	range 1 2
+	default 2
+	help
+	  How many images the bootloader sees when it looks at TFM and the app.
+	  When this is 1, the S and NS are considered as 1 image and must be
+	  updated in one atomic operation. When this is 2, they are split and
+	  can be updated independently if dependency requirements are met.
 
 config TFM_IPC
 	bool "IPC"

@@ -57,7 +57,7 @@ manifest:
       revision: f1fa8241f8786198ba41155413243de36ed878a5
       path: modules/hal/infineon
     - name: hal_nordic
-      revision: f0d54d8449acbee49b3cebcef0e3e56640c50277
+      revision: f3434da6446380fcdd426dbe2866af21d0d549b6
       path: modules/hal/nordic
     - name: hal_openisa
       revision: 40d049f69c50b58ea20473bee14cf93f518bf262
@@ -112,7 +112,7 @@ manifest:
       revision: 3f545d76a2e6d1db83a470ccdb5bebd1f484e137
       path: modules/lib/loramac-node
     - name: openthread
-      revision: b7433ff4ef9e0d8348bdc605ff82efb9c356b233
+      revision: aad6518ee30d3840411b21437d396f0405e947c3
       path: modules/lib/openthread
     - name: segger
       revision: 38c79a447e4a47d413b4e8d34448316a5cece77c

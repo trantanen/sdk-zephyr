@@ -100,8 +100,6 @@ static int ipcp_nak_override_address(struct net_pkt *pkt, size_t oplen,
 {
 //b_jh:
 #if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
-	printf("ipcp_nak_override_address\n");
-
 	/* We are supposed to be a SERVER, i.e. don't take CLIENT's IP,
 	   because CLIENT is wanting to have it from us */
     return 0;

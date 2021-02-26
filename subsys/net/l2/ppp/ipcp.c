@@ -173,7 +173,7 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 	/* Request is zeros? Give our IP address in ConfNak */
 	if (net_addr_pton(AF_INET, "0.0.0.0", &zeroes) >= 0 &&
 		memcmp(&zeroes, &data->addr, sizeof(struct in_addr)) == 0) {
-		NET_WARN("[IPCP] zeroes received as IP addr, sending NAK with our IP\n");
+		NET_DBG("[IPCP] zeroes received as IP addr, sending NAK with our IP\n");
 		return -EINVAL;
 	}
 #endif

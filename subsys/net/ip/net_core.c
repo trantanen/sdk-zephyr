@@ -55,13 +55,12 @@ LOG_MODULE_REGISTER(net_core, CONFIG_NET_CORE_LOG_LEVEL);
 
 #include "net_stats.h"
 
-#if defined(CONFIG_NET_OFFLOAD)
-//b_jh
-typedef enum net_verdict (*net_core_callback_t)(struct net_if *iface, struct net_pkt *pkt);
+#if defined(CONFIG_NET_OFFLOAD) && defined(CONFIG_PPP_DIALUP)
+typedef enum net_verdict (*net_core_offloaded_rcv_cb_t)(struct net_pkt *pkt);
 
-static net_core_callback_t offloaded_rcv_cb = NULL;
+static net_core_offloaded_rcv_cb_t offloaded_rcv_cb = NULL;
 
-void net_core_register_pkt_cb(net_core_callback_t cb)
+void net_core_register_offloaded_pkt_rcv_cb(net_core_offloaded_rcv_cb_t cb)
 {
 	offloaded_rcv_cb = cb;
 }
@@ -90,7 +89,7 @@ static inline enum net_verdict process_data(struct net_pkt *pkt,
 
 	/* If there is no data, then drop the packet. */
 	if (!pkt->frags) {
-		NET_WARN("Corrupted packet (frags %p)", pkt->frags);
+		NET_DBG("Corrupted packet (frags %p)", pkt->frags);
 		net_stats_update_processing_error(net_pkt_iface(pkt));
 
 		return NET_DROP;
@@ -100,7 +99,7 @@ static inline enum net_verdict process_data(struct net_pkt *pkt,
 		ret = net_if_recv_data(net_pkt_iface(pkt), pkt);
 		if (ret != NET_CONTINUE) {
 			if (ret == NET_DROP) {
-				NET_WARN("Packet %p discarded by L2", pkt);
+				NET_DBG("Packet %p discarded by L2", pkt);
 				net_stats_update_processing_error(
 							net_pkt_iface(pkt));
 			}
@@ -120,8 +119,7 @@ static inline enum net_verdict process_data(struct net_pkt *pkt,
 	net_pkt_cursor_init(pkt);
 
 	/* IP version and header length. */
-	char type = (NET_IPV6_HDR(pkt)->vtc & 0xf0);
-	switch (type) {
+	switch (NET_IPV6_HDR(pkt)->vtc & 0xf0) {
 #if defined(CONFIG_NET_IPV6)
 	case 0x60:
 		return net_ipv6_input(pkt, is_loopback);
@@ -130,10 +128,10 @@ static inline enum net_verdict process_data(struct net_pkt *pkt,
 	case 0x40:
 		return net_ipv4_input(pkt);
 #endif
-#if defined(CONFIG_NET_OFFLOAD)//b_jh: or CONFIG_NET_OFFLOADED
+#if defined(CONFIG_NET_OFFLOAD) && defined(CONFIG_PPP_DIALUP)
 	default:
 		if (offloaded_rcv_cb) {
-			return offloaded_rcv_cb(net_pkt_iface(pkt), pkt);
+			return offloaded_rcv_cb(pkt);
 		}
 #endif
 	}
@@ -154,8 +152,7 @@ static void processing_data(struct net_pkt *pkt, bool is_loopback)
 		break;
 	case NET_DROP:
 	default:
-		//b_jh
-		NET_WARN("Dropping pkt %p", pkt);
+		NET_DBG("Dropping pkt %p", pkt);
 		net_pkt_unref(pkt);
 		break;
 	}

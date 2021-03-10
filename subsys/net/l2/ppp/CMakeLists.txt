@@ -21,7 +21,6 @@ zephyr_library_sources_ifdef(CONFIG_NET_STATISTICS_PPP ppp_stats.c)
 
 zephyr_library_sources_ifdef(CONFIG_NET_L2_PPP_MGMT ppp_mgmt.c)
 
-#b_jh:
 if(CONFIG_NET_IPV4 OR (CONFIG_NET_OFFLOAD AND CONFIG_NET_L2_PPP))
   zephyr_library_sources_ifdef(CONFIG_NET_L2_PPP ipcp.c)
 endif()

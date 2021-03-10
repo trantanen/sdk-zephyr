@@ -13,11 +13,6 @@ LOG_MODULE_DECLARE(net_l2_ppp, CONFIG_NET_L2_PPP_LOG_LEVEL);
 #include <net/net_pkt.h>
 #include <net/net_mgmt.h>
 
-//b_jh:
-#if defined(CONFIG_PPP_DIALUP)
-#include <sys/byteorder.h>
-#endif
-
 #include <net/ppp.h>
 
 #include "net_private.h"
@@ -316,7 +311,6 @@ static void lcp_init(struct ppp_context *ctx)
 
 	ppp_fsm_name_set(&ctx->lcp.fsm, ppp_proto2str(PPP_LCP));
 
-//b_jh:
 #if defined(CONFIG_PPP_DIALUP)
 	ctx->lcp.my_options.mru = PPP_MRU;
 	ctx->lcp.fsm.my_options.info = lcp_my_options;

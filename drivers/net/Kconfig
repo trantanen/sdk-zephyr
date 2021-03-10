@@ -23,7 +23,6 @@ config NET_PPP_DRV_NAME
 	help
 	  This option sets the driver name
 
-#jani
 config NET_PPP_MTU_MRU
 	int "PPP MTU and MRU"
 	default 1500
@@ -83,8 +82,8 @@ config PPP_DIALUP
 	bool "Features that are needed if using PPP for dial up"
 	default n
 	help
-	  Acting as a PPP server for passing IP address and DNS addresses for 
-	  the PPP link peer.
+	  Acting as a PPP server for passing MRU, IP address
+	  and DNS addresses for the PPP link peer.
 
 module = NET_PPP
 module-dep = LOG

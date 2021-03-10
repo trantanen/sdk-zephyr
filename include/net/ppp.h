@@ -25,12 +25,7 @@ extern "C" {
  */
 
 /** PPP maximum receive unit (MRU) */
-//b_jh: TODO add MRU into LCP negoation?
-#if defined(CONFIG_NET_PPP_MTU_MRU)
 #define PPP_MRU CONFIG_NET_PPP_MTU_MRU
-#else
-#define PPP_MRU 1500
-#endif
 
 /** PPP maximum transfer unit (MTU) */
 #define PPP_MTU PPP_MRU
@@ -356,7 +351,6 @@ struct lcp_options {
 	uint16_t auth_proto;
 };
 
-//b_jh:
 #if defined(CONFIG_PPP_DIALUP)
 #define LCP_NUM_MY_OPTIONS	1
 #endif
@@ -407,13 +401,11 @@ struct ppp_context {
 
 		/** Magic-Number value */
 		uint32_t magic;
-//b_jh:
 #if defined(CONFIG_PPP_DIALUP)
 		struct ppp_my_option_data my_options_data[LCP_NUM_MY_OPTIONS];
 #endif
 	} lcp;
 
-//jani
 #if defined(CONFIG_NET_IPV4) || (defined(CONFIG_NET_OFFLOAD) && defined(CONFIG_NET_L2_PPP))
 	struct {
 		/** Finite state machine for IPCP */

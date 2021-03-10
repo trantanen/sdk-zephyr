@@ -98,7 +98,7 @@ static int ipcp_ack_dns2(struct ppp_context *ctx, struct net_pkt *pkt,
 static int ipcp_nak_override_address(struct net_pkt *pkt, size_t oplen,
 				     struct in_addr *addr)
 {
-if (oplen != sizeof(*addr)) {
+	if (oplen != sizeof(*addr)) {
 		return -EINVAL;
 	}
 
@@ -185,7 +185,6 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 		return -EMSGSIZE;
 	}
 
-//b_jh:
 #if defined(CONFIG_PPP_DIALUP)
 	struct sockaddr_in zeroes;
 	
@@ -211,7 +210,6 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 
 	return 0;
 }
-//b_jh:
 #if defined(CONFIG_PPP_DIALUP)
 static int ipcp_server_nak_ip_address(struct ppp_fsm *fsm, struct net_pkt *ret_pkt,
 			       void *user_data)

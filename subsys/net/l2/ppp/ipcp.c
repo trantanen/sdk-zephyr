@@ -147,7 +147,7 @@ struct ipcp_peer_option_data {
 	struct in_addr addr;
 };
 
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 static int ipcp_dns_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 				 void *user_data)
 {
@@ -186,7 +186,7 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 	}
 
 //b_jh:
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 	struct sockaddr_in zeroes;
 	
 	/* Request is zeros? Give our IP address in ConfNak */
@@ -212,7 +212,7 @@ static int ipcp_ip_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 	return 0;
 }
 //b_jh:
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 static int ipcp_server_nak_ip_address(struct ppp_fsm *fsm, struct net_pkt *ret_pkt,
 			       void *user_data)
 {
@@ -251,7 +251,7 @@ static int ipcp_server_nak_dns2_address(struct ppp_fsm *fsm, struct net_pkt *ret
 #endif
 
 static const struct ppp_peer_option_info ipcp_peer_options[] = {
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 	PPP_PEER_OPTION(IPCP_OPTION_IP_ADDRESS, ipcp_ip_address_parse, ipcp_server_nak_ip_address),
 	PPP_PEER_OPTION(IPCP_OPTION_DNS1, ipcp_dns_address_parse, ipcp_server_nak_dns1_address),	
 	PPP_PEER_OPTION(IPCP_OPTION_DNS2, ipcp_dns_address_parse, ipcp_server_nak_dns2_address),

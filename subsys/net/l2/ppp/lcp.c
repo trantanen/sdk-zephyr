@@ -14,7 +14,7 @@ LOG_MODULE_DECLARE(net_l2_ppp, CONFIG_NET_L2_PPP_LOG_LEVEL);
 #include <net/net_mgmt.h>
 
 //b_jh:
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 #include <sys/byteorder.h>
 #endif
 
@@ -208,7 +208,7 @@ static void lcp_finished(struct ppp_fsm *fsm)
 	ppp_link_terminated(ctx);
 }
 /* ***************************************************************************** */
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 
 #define MRU_OPTION_LEN 4
 #define MRU_DATA_LEN 2
@@ -317,7 +317,7 @@ static void lcp_init(struct ppp_context *ctx)
 	ppp_fsm_name_set(&ctx->lcp.fsm, ppp_proto2str(PPP_LCP));
 
 //b_jh:
-#if defined(CONFIG_PPP_CLIENT_CLIENTSERVER)
+#if defined(CONFIG_PPP_DIALUP)
 	ctx->lcp.my_options.mru = PPP_MRU;
 	ctx->lcp.fsm.my_options.info = lcp_my_options;
 	ctx->lcp.fsm.my_options.data = ctx->lcp.my_options_data;

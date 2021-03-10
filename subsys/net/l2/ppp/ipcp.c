@@ -164,7 +164,8 @@ static int ipcp_dns_address_parse(struct ppp_fsm *fsm, struct net_pkt *pkt,
 	/* Request is zeros? Give our dns address in ConfNak */
 	if (net_addr_pton(AF_INET, "0.0.0.0", &zeroes) >= 0 &&
 		memcmp(&zeroes, &data->addr, sizeof(struct in_addr)) == 0) {
-		NET_DBG("[IPCP] zeroes received as DNS IP addr, sending NAK with our DNS addrs\n");
+		NET_DBG(
+			"[IPCP] zeroes rcvd as DNS addr, sending NAK with our DNS addr\n");
 		return -EINVAL;
 	}
 

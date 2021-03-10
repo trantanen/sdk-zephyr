@@ -44,7 +44,6 @@ struct ppp_api {
 	 */
 	struct net_if_api iface_api;
 	
-	//jani: TODO: api for setting MTU an setting ip protocol support (based on pdn type)
 	/** Start the device */
 	int (*start)(const struct device *dev);
 
